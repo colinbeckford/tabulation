@@ -1,0 +1,132 @@
+<!doctype html>
+<html>
+  <head style="text-align: center;">
+  <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js">
+  </script>
+  <script async defer src="https://apis.google.com/js/api.js"
+  onload="this.onload=handleClientLoad()"
+  onreadystatechange="if (this.readyState === 'complete') this.onload()">
+  </script>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+</head>
+<body style="text-align: center;">
+      <div id="auth">
+   <h1> Tabulation </h1>
+   <br>
+   <br>
+   <input type="image" src="https://developers.google.com/identity/images/btn_google_signin_dark_normal_web.png" onclick="handleSignInClick()"/>
+   </div>
+   <br>
+   <br>
+ <div id='login' style="display: none">
+     <h3 align="center"> Log In </h3>
+     <input align="center" id="judge-pin" placeholder="Enter PIN"> </input>
+     <br>
+     <br>
+     <button onclick="autoLogin()" class="btn btn-dark"> Start Judging </button>
+     <br>
+     <br>
+     <br>
+     <h3 align="center"> Configure Judge (Admin Use Only) </h3>
+     <br>
+     <input id="sheet-link" placeholder="Input Spreadsheet Link"> </input>
+     <br>
+     <br>
+     <input id="admin-pin" placeholder="Enter Admin PIN">  </input>
+     <br>
+     <br>
+     <input id="new-judge-pin" placeholder="Enter Judge Codes (separate by comma)">  </input>
+     <br>
+     <br>
+     <input id="contest" placeholder="Enter Contest Name">  </input>
+     <br>
+     <br>
+     <input id="division" placeholder="Enter Division/Round">  </input>
+     <br>
+     <br>
+     <select id="judge-type">
+       <option value="Clicker">Clicker</option>
+       <option value="Evaluation">Evaluation</option>
+     </select>
+     <br>
+     <br>
+     <button onclick="append()" class="btn btn-dark"> Add Judge (admin use only) </button>
+   </div>
+   <div id="click" style="display: none">
+     <h2 class="contest-title"> </h2>
+     <h2 class="judge-title"> </h2>
+     <br>
+     <table style="width:100%" id="click-table" class="table table-bordered table-dark">
+       <tr>
+         <td style="width:40%"> Name </td>
+         <td style="width:12%"> + </td>
+         <td style="width:12%"> - </td>
+         <td style="width:12%"> Stop </td>
+         <td style="width:12%"> Discard </td>
+         <td style="width:12%"> Cut </td>
+     </table>
+     <br>
+     <span id="click-update-status"></span>
+     <br>
+     <br>
+     <button onclick="groupUpdate('click')" id="submitClick" class="btn btn-dark"> Update </button>
+     <br>
+     <br>
+     <button onclick="getCSV('click')" class="btn btn-dark"> Get CSV Format </button>
+     <br>
+     <br>
+     <textarea id="csv-log" cols="33"> </textarea>
+   </div>
+   <div id="eval8" style="display: none">
+     <h2 class="contest-title"> </h2>
+     <h2 class="judge-title"> </h2>
+     <br>
+     <table style="width:100%" id="eval-final-table" class="table table-bordered table-dark">
+       <tr>
+         <td style="width:34%"> Name </td>
+         <td style="width:8%"> EXE </td>
+         <td style="width:8%"> CTL </td>
+         <td style="width:8%"> TDV </td>
+         <td style="width:8%"> SEM </td>
+         <td style="width:8%"> MU1 </td>
+         <td style="width:8%"> MU2 </td>
+         <td style="width:8%"> BDY </td>
+         <td style="width:8%"> SHW </td>
+     </table>
+     <br>
+     <span id="eval8-update-status"></span>
+     <br>
+     <br>
+     <button onclick="groupUpdate('eval8')" id="submitEval8" class="btn btn-dark"> Update </button>
+     <br>
+     <br>
+     <button onclick="getCSV('eval8')" class="btn btn-dark"> Get CSV Format </button>
+   </div>
+   <div id="eval4" style="display: none">
+     <h2 class="contest-title"> </h2>
+     <h2 class="judge-title"> </h2>
+     <br>
+     <table style="width:100%" id="eval-qualifying-table" class="table table-bordered table-dark">
+       <tr>
+         <td style="width:40%"> Name </td>
+         <td style="width:15%"> EXE </td>
+         <td style="width:15%"> CTL </td>
+         <td style="width:15%"> MU1 </td>
+         <td style="width:15%"> BDY </td>
+     </table>
+     <br>
+     <span id="eval4-update-status"></span>
+     <br>
+     <br>
+     <button onclick="groupUpdate('eval4')" id="submitEval4" class="btn btn-dark"> Update </button>
+     <br>
+     <br>
+     <button onclick="getCSV('eval4')" class="btn btn-dark"> Get CSV Format </button>
+   </div>
+   </body>
+</html>
