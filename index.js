@@ -1,25 +1,30 @@
 //initializing necessary modules for the server side
 const express = require('express');
 const app = express();
+var http = require('http');
+var server = http.Server(app);
+app.use(express.static('client'));
 let port = process.env.PORT;
 if (port == null || port == "") {
   port = 8000;
 }
-app.listen(port);
 var request = require('request');
 var cors = require('cors');
 app.use(cors());
+var bodyParser = require("body-parser");
+app.use(bodyParser.urlencoded({extended:false}));
+app.use(bodyParser.json());
+app.use(express.static("."));
+var mysql = require('mysql');
+app.listen(port);
+
 // app.use(function(req, res, next) {
 //     res.header("Access-Control-Allow-Origin", "scalescollective.com");
 //     res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
 //     res.header('Access-Control-Allow-Methods', 'OPTIONS, POST, GET');
 //     next();
 // });
-var bodyParser = require("body-parser");
-app.use(bodyParser.urlencoded({extended:false}));
-app.use(bodyParser.json());
-app.use(express.static("."));
-var mysql = require('mysql');
+
 // const con = mysql.createPool({
 //   user: process.env.DB_USER, // e.g. 'my-db-user'
 //   password: process.env.DB_PASS, // e.g. 'my-db-password'
