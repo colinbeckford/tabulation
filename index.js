@@ -1,7 +1,11 @@
 //initializing necessary modules for the server side
 const express = require('express');
 const app = express();
-app.listen(8080);
+let port = process.env.PORT;
+if (port == null || port == "") {
+  port = 8000;
+}
+app.listen(port);
 var request = require('request');
 var cors = require('cors');
 app.use(cors());
