@@ -6,11 +6,11 @@ var server = http.Server(app);
 app.use(express.static('client'));
 let port = process.env.PORT;
 if (port == null || port == "") {
-  port = 8000;
+  port = 8080;
 }
 var request = require('request');
 var cors = require('cors');
-app.use(cors());
+app.use(cors({credentials: true, origin: 'https://scalescollective.com'}));
 var bodyParser = require("body-parser");
 app.use(bodyParser.urlencoded({extended:false}));
 app.use(bodyParser.json());
@@ -18,12 +18,12 @@ app.use(express.static("."));
 var mysql = require('mysql');
 app.listen(port);
 
-// app.use(function(req, res, next) {
-//     res.header("Access-Control-Allow-Origin", "scalescollective.com");
-//     res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
-//     res.header('Access-Control-Allow-Methods', 'OPTIONS, POST, GET');
-//     next();
-// });
+app.use(function(req, res, next) {
+    res.header("Access-Control-Allow-Origin", "https://scalescollective.com");
+    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+    res.header('Access-Control-Allow-Methods', 'OPTIONS, POST, GET');
+    next();
+});
 
 // const con = mysql.createPool({
 //   user: process.env.DB_USER, // e.g. 'my-db-user'
@@ -64,15 +64,21 @@ app.post('/append', function(req,res){
   {
     for (var i=0; i<=num_judges; i++)
     {
-      con.query('INSERT INTO NYYL ( id, name, type, contest, division ) values ( ' + pin_list[i] + ", '" + name_list[i] + "', '" + req.body.judgetype + "', '" + req.body.contest + "', '" + req.body.division + "' );",
+      con.query("INSERT INTO NYYL ( id, name, type, contest, division ) values (" + pin_list[i] + ", '" + name_list[i] + "', '" + req.body.judgetype + "', '" + req.body.contest + "', '" + req.body.division + "');",
       function(err,rows,fields) {
       if (err)
       {
-        res.send(err);
+        if (err.errno != 1054)
+        {
+          console.log(err);
+        }
+      }
+      else
+      {
+        res.send("Success");
       }
       });
     }
-    res.send('Success');
   }
   else
   {

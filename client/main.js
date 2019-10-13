@@ -10,6 +10,7 @@ var restarts = [];
 var discards = [];
 var detaches = [];
 var controlList = [];
+var qualityList = [];
 var executionList = [];
 var variationList = [];
 var spaceUseList = [];
@@ -131,6 +132,7 @@ var profile =
   "name": panel,
   "num_judges": panel.split(',').length
 };
+console.log(profile);
 //var url = 'https://tabulation-login.appspot.com/append?num=' + $('#admin-pin').val();
 var url = 'http://localhost:8080/append?num=' + $('#admin-pin').val();
 $.ajax({
@@ -143,7 +145,6 @@ xhrFields: {
        withCredentials: true
 },
 success: function(msg) {
-  console.log(msg);
   alert("Successfully added to the database!");
 },
 error: function(msg) {
@@ -245,6 +246,10 @@ function chooseJudge()
         if (response.result.values[0] == "This spreadsheet is designed for Final")
         {
           evaltype = 8;
+        }
+        else if (response.result.values[0] == "This spreadsheet is designed for B")
+        {
+          evaltype = 7;
         }
         else
         {
@@ -428,6 +433,32 @@ function processType(list,name) {
         }
       }
     }
+    else if (selectedJudgeType == "Evaluation" && evaltype == 7)
+    {
+      roundType = "b";
+      for (var i=0; i<list.length; i++)
+      {
+        if (list[i] == selectedJudgeName)
+        {
+          if (i == 0)
+          {
+            range = "INPUT!B3:H103";
+          }
+          else if (i == 1)
+          {
+            range = "INPUT!I3:O103";
+          }
+          else if (i == 2)
+          {
+            range = "INPUT!P3:V103";
+          }
+          else if (i == 3)
+          {
+            range = "INPUT!W3:AC103";
+          }
+        }
+      }
+    }
   }
 
 function loadEvalTable(num) {
@@ -437,6 +468,15 @@ for (var i=0;i<num;i++)
 {
   var evalRow = '<tr><td>' + playerList[i] + '</td><td>' + "<input id="+i+"execution-f size="+'3'+"</input>" + '</td><td>' + "<input id="+i+"control-f size="+'3'+"</input>" + '</td><td>' + "<input id="+i+"variation-f size="+'3'+"</input>" + '</td><td>' + "<input id="+i+"space-use-f size="+'3'+"</input>" + '</td><td>' + "<input id="+i+"choreography-f size="+'3'+"</input>" + '</td><td>' + "<input id="+i+"construction-f size="+'3'+"</input>" + '</td><td>' + "<input id="+i+"body-control-f size="+'3'+" </input>" + '</td><td>' + "<input id="+i+"showmanship-f size="+'3'+"</input> </td></tr>";
   $('#eval-final-table').append(evalRow);
+}
+}
+else if (evaltype == 7)
+{
+//edit loop to reflect proper categories
+for (var i=0;i<num;i++)
+{
+  var evalRow = '<tr><td>' + playerList[i] + '</td><td>' + "<input id="+i+"execution-b size="+'3'+"</input>" + '</td><td>' + "<input id="+i+"quality-b size="+'3'+"</input>" + '</td><td>' + "<input id="+i+"variation-b size="+'3'+"</input>" + '</td><td>' + "<input id="+i+"space-use-b size="+'3'+"</input>" + '</td><td>' + "<input id="+i+"music-use-b size="+'3'+"</input>" + '</td><td>' + "<input id="+i+"showmanship-b size="+'3'+"</input>" + '</td><td>' + "<input id="+i+"body-control-b size="+'3'+"</input>" + '</td></tr>';
+  $('#eval-b-table').append(evalRow);
 }
 }
 else if (evaltype == 4)
@@ -462,28 +502,21 @@ var evaloutputparams = {
      var evaloutput = (response.result.valueRanges[0].values);
      $('#eval-player-name-final').html(playerList[evaloutput.length]);
      $('#eval-player-name-qualifying').html(playerList[evaloutput.length]);
+     //maybe should add b for this?
      for (var i=0;i<evaloutput.length;i++)
      {
        if (roundType == "final")
        {
          index+=1;
          var currentEvalPlayer = playerList[i];
-         var ctrl = evaloutput[i][1];
-         var exec = evaloutput[i][0];
-         var vari = evaloutput[i][2];
-         var spcu = evaloutput[i][3];
-         var bdcn = evaloutput[i][6];
-         var shwm = evaloutput[i][7];
-         var cons = evaloutput[i][5];
-         var chor = evaloutput[i][4];
-         $('#'+i+"control-f").val(ctrl);
-         $('#'+i+"execution-f").val(exec);
-         $('#'+i+"variation-f").val(vari);
-         $('#'+i+"space-use-f").val(spcu);
-         $('#'+i+"showmanship-f").val(shwm);
-         $('#'+i+"body-control-f").val(cons);
-         $('#'+i+"choreography-f").val(chor);
-         $('#'+i+"construction-f").val(cons);
+         $('#'+i+"control-f").val(evaloutput[i][1]);
+         $('#'+i+"execution-f").val(evaloutput[i][0]);
+         $('#'+i+"variation-f").val(evaloutput[i][2]);
+         $('#'+i+"space-use-f").val(evaloutput[i][3]);
+         $('#'+i+"showmanship-f").val(evaloutput[i][7]);
+         $('#'+i+"body-control-f").val(evaloutput[i][6]);
+         $('#'+i+"choreography-f").val(evaloutput[i][4]);
+         $('#'+i+"construction-f").val(evaloutput[i][5]);
          controlList.push(ctrl);
          executionList.push(exec);
          variationList.push(vari);
@@ -497,10 +530,36 @@ var evaloutputparams = {
        else if (roundType == "qualifying")
        {
          index+=1;
+         var currentEvalPlayer = playerList[i];
          $('#'+i+"control-q").val(evaloutput[i][1]);
          $('#'+i+"execution-q").val(evaloutput[i][0]);
          $('#'+i+"body-control-q").val(evaloutput[i][2]);
          $('#'+i+"choreography-q").val(evaloutput[i][3]);
+         controlList.push(evaloutput[i][1]);
+         executionList.push(evaloutput[i][0]);
+         bodyControlList.push(evaloutput[i][2]);
+         choreographyList.push(evaloutput[i][3]);
+         liveEvals.push({currentEvalPlayer, exec, ctrl, chor, bdcn});
+       }
+       //need to add b roundType variable
+       else if (roundType == "b")
+       {
+         index+=1;
+         var currentEvalPlayer = playerList[i];
+         $('#'+i+"execution-b").val(evaloutput[i][0]);
+         $('#'+i+"quality-b").val(evaloutput[i][1]);
+         $('#'+i+"variation-b").val(evaloutput[i][2]);
+         $('#'+i+"space-use-b").val(evaloutput[i][3]);
+         $('#'+i+"music-use-b").val(evaloutput[i][4]);
+         $('#'+i+"showmanship-b").val(evaloutput[i][5]);
+         $('#'+i+"body-control-b").val(evaloutput[i][6]);
+         qualityList.push(evaloutput[i][1]);
+         executionList.push(evaloutput[i][0]);
+         variationList.push(evaloutput[i][2]);
+         spaceUseList.push(evaloutput[i][3]);
+         showmanshipList.push(evaloutput[i][5]);
+         bodyControlList.push(evaloutput[i][6]);
+         choreographyList.push(evaloutput[i][4]);
        }
      }
    }
@@ -516,9 +575,13 @@ var evaloutputparams = {
    {
      $("#eval8").css("display","block");
    }
-   else
+   else if (roundType == "qualifying")
    {
      $("#eval4").css("display","block");
+   }
+   else if (roundType == "b")
+   {
+     $("#eval7").css("display","block");
    }
 }
 
@@ -548,6 +611,30 @@ evalRequest.then(function(response) {
   else
   {
     $('#eval8-update-status').replaceWith('<span id="eval8-update-status" class="badge badge-danger">Error</span>');
+    console.log(reason.result.error);
+  }
+});
+}
+else if (evaltype == 7)
+{
+//need to set lists for b categories?
+var evalinputRangeBody = {
+  "range": range,
+  "majorDimension": "COLUMNS",
+  "values": [executionList, controlList, choreographyList, bodyControlList],
+};
+var evalRequest = gapi.client.sheets.spreadsheets.values.update(evalinputParams, evalinputRangeBody);
+evalRequest.then(function(response) {
+  $('#eval7-update-status').replaceWith('<span id="eval7-update-status" class="badge badge-success">Success</span>');
+  setTimeout(revert('eval4'),5000);
+}, function(reason) {
+  if (reason.result.error.code == 429)
+  {
+    console.log(reason.result.error);
+  }
+  else
+  {
+    $('#eval7-update-status').replaceWith('<span id="eval7-update-status" class="badge badge-danger">Error</span>');
     console.log(reason.result.error);
   }
 });
@@ -598,6 +685,14 @@ else if (evaltype == 4)
     i++;
   }
 }
+else if (evaltype == 7)
+{
+  while (i < numPlayers)
+  {
+    CSVstring += $('#'+i+"execution-b").val() + "," + $('#'+i+"quality-b").val() + "," + $('#'+i+"variation-b").val() + $('#'+i+"space-use-b").val() + $('#'+i+"music-use-b").val() + $('#'+i+"showmanship-b").val() + "," + $('#'+i+"body-control-b").val() + "," + "\n"
+    i++;
+  }
+}
 else if (evaltype == 8)
 {
   while (i < numPlayers)
@@ -611,6 +706,7 @@ document.getElementById('csv-log').value = CSVstring;
 
 }
 
+//need to add b evaltype 7 here
 function groupUpdate(type) {
 var i=0;
 if (type == "click")
@@ -638,6 +734,22 @@ else if (evaltype == 4)
     i++;
   }
   appendEval('qualifying');
+}
+else if (evaltype == 7)
+{
+  //update category lists and add to global?
+  while (i < numPlayers)
+  {
+    executionList[i] = parseInt($('#'+i+"execution-b").val());
+    qualityList[i] = parseInt($('#'+i+"quality-b").val());
+    variationList[i] =  parseInt($('#'+i+"variation-b").val());
+    spaceUseList[i] =  parseInt($('#'+i+"space-use-b").val());
+    showmanshipList[i] =  parseInt($('#'+i+"showmanship-b").val());
+    bodyControlList[i] =  parseInt($('#'+i+"body-control-b").val());
+    musicUseList[i] =  parseInt($('#'+i+"music-use-b").val());
+    i++;
+  }
+  appendEval('b');
 }
 else if (evaltype == 8)
 {

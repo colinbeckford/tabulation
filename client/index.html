@@ -17,7 +17,7 @@
     </script>
 </head>
 <body style="text-align: center;">
-      <div id="auth">
+  <div id="auth">
    <h1> Tabulation </h1>
    <br>
    <br>
@@ -129,6 +129,30 @@
      <br>
      <br>
      <button onclick="getCSV('eval4')" class="btn btn-dark"> Get CSV Format </button>
+   </div>
+   <div id="eval7" style="display: none">
+     <h2 class="contest-title"> </h2>
+     <h2 class="judge-title"> </h2>
+     <br>
+     <table style="width:100%" id="eval-b-table" class="table table-bordered table-dark">
+       <tr>
+         <td style="width:30%"> Name </td>
+         <td style="width:10%">Execution</td>
+         <td style="width:10%">T. Quality</td>
+         <td style="width:10%">T. Variation</td>
+         <td style="width:10%">Space Use</td>
+         <td style="width:10%">Music Use</td>
+         <td style="width:10%">Showmanship</td>
+         <td style="width:10%">Body Control</td>
+     </table>
+     <br>
+     <span id="eval7-update-status"></span>
+     <br>
+     <br>
+     <button onclick="groupUpdate('eval7')" id="submitEval7" class="btn btn-dark"> Update </button>
+     <br>
+     <br>
+     <button onclick="getCSV('eval7')" class="btn btn-dark"> Get CSV Format </button>
    </div>
    </body>
 </html>
