@@ -15,6 +15,7 @@ var executionList = [];
 var variationList = [];
 var spaceUseList = [];
 var bodyControlList = [];
+var musicUseList = [];
 var choreographyList = [];
 var constructionList = [];
 var showmanshipList = [];
@@ -475,7 +476,7 @@ else if (evaltype == 7)
 //edit loop to reflect proper categories
 for (var i=0;i<num;i++)
 {
-  var evalRow = '<tr><td>' + playerList[i] + '</td><td>' + "<input id="+i+"execution-b size="+'3'+"</input>" + '</td><td>' + "<input id="+i+"quality-b size="+'3'+"</input>" + '</td><td>' + "<input id="+i+"variation-b size="+'3'+"</input>" + '</td><td>' + "<input id="+i+"space-use-b size="+'3'+"</input>" + '</td><td>' + "<input id="+i+"music-use-b size="+'3'+"</input>" + '</td><td>' + "<input id="+i+"showmanship-b size="+'3'+"</input>" + '</td><td>' + "<input id="+i+"body-control-b size="+'3'+"</input>" + '</td></tr>';
+  var evalRow = '<tr><td>' + playerList[i] + '</td><td>' + "<input id="+i+"execution-b size="+'3'+"</input>" + '</td><td>' + "<input id="+i+"quality-b size="+'3'+"</input>" + '</td><td>' + "<input id="+i+"variation-b size="+'3'+"</input>" + '</td><td>' + "<input id="+i+"control-b size="+'3'+"</input>" + '</td><td>' + "<input id="+i+"music-use-b size="+'3'+"</input>" + '</td><td>' + "<input id="+i+"showmanship-b size="+'3'+"</input>" + '</td><td>' + "<input id="+i+"body-control-b size="+'3'+"</input>" + '</td></tr>';
   $('#eval-b-table').append(evalRow);
 }
 }
@@ -549,14 +550,14 @@ var evaloutputparams = {
          $('#'+i+"execution-b").val(evaloutput[i][0]);
          $('#'+i+"quality-b").val(evaloutput[i][1]);
          $('#'+i+"variation-b").val(evaloutput[i][2]);
-         $('#'+i+"space-use-b").val(evaloutput[i][3]);
+         $('#'+i+"control-b").val(evaloutput[i][3]);
          $('#'+i+"music-use-b").val(evaloutput[i][4]);
          $('#'+i+"showmanship-b").val(evaloutput[i][5]);
          $('#'+i+"body-control-b").val(evaloutput[i][6]);
          qualityList.push(evaloutput[i][1]);
          executionList.push(evaloutput[i][0]);
          variationList.push(evaloutput[i][2]);
-         spaceUseList.push(evaloutput[i][3]);
+         controlList.push(evaloutput[i][3]);
          showmanshipList.push(evaloutput[i][5]);
          bodyControlList.push(evaloutput[i][6]);
          choreographyList.push(evaloutput[i][4]);
@@ -617,16 +618,15 @@ evalRequest.then(function(response) {
 }
 else if (evaltype == 7)
 {
-//need to set lists for b categories?
 var evalinputRangeBody = {
   "range": range,
   "majorDimension": "COLUMNS",
-  "values": [executionList, controlList, choreographyList, bodyControlList],
+  "values": [executionList, qualityList, variationList, controlList, musicUseList, bodyControlList, showmanshipList],
 };
 var evalRequest = gapi.client.sheets.spreadsheets.values.update(evalinputParams, evalinputRangeBody);
 evalRequest.then(function(response) {
   $('#eval7-update-status').replaceWith('<span id="eval7-update-status" class="badge badge-success">Success</span>');
-  setTimeout(revert('eval4'),5000);
+  setTimeout(revert('eval7'),5000);
 }, function(reason) {
   if (reason.result.error.code == 429)
   {
@@ -743,7 +743,7 @@ else if (evaltype == 7)
     executionList[i] = parseInt($('#'+i+"execution-b").val());
     qualityList[i] = parseInt($('#'+i+"quality-b").val());
     variationList[i] =  parseInt($('#'+i+"variation-b").val());
-    spaceUseList[i] =  parseInt($('#'+i+"space-use-b").val());
+    controlList[i] =  parseInt($('#'+i+"control-b").val());
     showmanshipList[i] =  parseInt($('#'+i+"showmanship-b").val());
     bodyControlList[i] =  parseInt($('#'+i+"body-control-b").val());
     musicUseList[i] =  parseInt($('#'+i+"music-use-b").val());
@@ -841,11 +841,15 @@ if (type == "click")
 {
   $('#click-update-status').replaceWith('<span id="click-update-status"></span>');
 }
-if (type == "eval4")
+else if (type == "eval4")
 {
   $('#eval4-update-status').replaceWith('<span id="eval4-update-status"></span>');
 }
-if (type == "eval8")
+else if (type == "eval7")
+{
+  $('#eval7-update-status').replaceWith('<span id="eval7-update-status"></span>');
+}
+else if (type == "eval8")
 {
   $('#eval8-update-status').replaceWith('<span id="eval8-update-status"></span>');
 }
@@ -865,7 +869,6 @@ var clickinputRangeBody = {
 };
 var clickRequest = gapi.client.sheets.spreadsheets.values.update(clickinputParams, clickinputRangeBody);
 clickRequest.then(function(response) {
-  console.log("Req successful");
   $('#click-update-status').replaceWith('<span id="click-update-status" class="badge badge-success">Success</span>');
   setTimeout(revert('click'),5000);
 }, function(reason) {
